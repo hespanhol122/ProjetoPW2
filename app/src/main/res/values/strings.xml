@@ -5,4 +5,11 @@
     <string name="senha">Senha</string>
     <string name="btn_entrar">Entrar</string>
     <string name="link_cadastro">Não tem cadastro?</string>
+    <string name="txt_nome">Nome</string>
+    <string name="txt_telefone">Telefone</string>
+    <string name="txt_confirmacao">Confirme sua senha</string>
+    <string name="btn_salvar">Salvar</string>
+    <string name="msg_campo_obrigatorio">Este campo é obrigatório</string>
+    <string name="msg_registro_salvo">Registro salvo com sucesso!</string>
+    <string name="msg_error_senha">As senhas estão diferentes</string>
 </resources>
