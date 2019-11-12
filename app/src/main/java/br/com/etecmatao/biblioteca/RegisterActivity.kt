@@ -1,70 +1,95 @@
 package br.com.etecmatao.biblioteca
 
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.telephony.TelephonyManager
 import android.text.TextUtils
 import android.view.View
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import br.com.etecmatao.biblioteca.worker.SaveUserWorker
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+
 
 class RegisterActivity : AppCompatActivity() {
 
-    lateinit var campoNome:TextInputEditText
-    lateinit var campoEmail:TextInputEditText
-    lateinit var campoSenha:TextInputEditText
-    lateinit var campoConfirma:TextInputEditText
-    lateinit var campoTelefone:TextInputEditText
+    lateinit var campoNome: TextInputEditText
+    lateinit var campoEmail: TextInputEditText
+    lateinit var campoTelefone: TextInputEditText
+    lateinit var campoSenha: TextInputEditText
+    lateinit var campoConfirmaSenha: TextInputEditText
+
+    lateinit var fields: Array<TextInputEditText>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        campoNome = findViewById(R.id.input_nome)
-        campoEmail = findViewById(R.id.input_email)
-        campoSenha = findViewById(R.id.input_senha)
-        campoConfirma = findViewById(R.id.input_confirmacao)
-        campoTelefone = findViewById(R.id.input_telefone)
+        campoNome = findViewById(R.id.txtNome)
+        campoEmail = findViewById(R.id.txtEmail)
+        campoTelefone = findViewById(R.id.txtTelefone)
+        campoSenha = findViewById(R.id.txtSenha)
+        campoConfirmaSenha = findViewById(R.id.txtConformaSenha)
 
-
-        
+        fields = arrayOf(campoNome, campoEmail, campoTelefone, campoSenha, campoConfirmaSenha)
     }
 
-    fun salvar(v:View){
-        if (!valida()){
+    fun validar(): Boolean {
+        var error = false
+
+        for (field in fields) {
+            field.error = null
+
+            if (TextUtils.isEmpty(field.text.toString())) {
+                field.error = resources.getString(R.string.msg_required_field)
+                error = true
+            }
+        }
+
+        if (!TextUtils.equals(campoSenha.text.toString(), campoConfirmaSenha.text.toString())) {
+            campoConfirmaSenha.error = resources.getString(R.string.msg_password_different)
+            error = true
+        }
+
+        return !error
+    }
+
+    fun salvar(v: View) {
+        if (!validar()) {
             return
         }
 
-        Toast.makeText(this, getString(R.string.msg_registro_salvo), Toast.LENGTH_SHORT).show()
-    }
+        val input = workDataOf(
+            "nome" to campoNome.text.toString(),
+            "email" to campoEmail.text.toString(),
+            "telefone" to campoTelefone.text.toString(),
+            "senha" to campoSenha.text.toString()
+        )
 
-    fun valida():Boolean{
-        var result = true
+        var request = OneTimeWorkRequestBuilder<SaveUserWorker>()
+            .setInputData(input)
+            .build()
 
-        campoNome.error = null
-        campoEmail.error = null
-        campoSenha.error = null
-        campoConfirma.error = null
+        var resultObserver = Observer<WorkInfo> {
+            if (it == null){
+                return@Observer
+            }
 
-        if (TextUtils.isEmpty(campoNome.text.toString())){
-            campoNome.error = getString(R.string.msg_campo_obrigatorio)
-            result = false
+            if (it.state == WorkInfo.State.SUCCEEDED || it.state == WorkInfo.State.FAILED){
+                Snackbar.make(
+                    this.window.decorView,
+                    it.outputData.getString("result")!!,
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
         }
 
-        if (TextUtils.isEmpty(campoEmail.text.toString())){
-            campoEmail.error = getString(R.string.msg_campo_obrigatorio)
-            result = false
-        }
-        if (TextUtils.isEmpty((campoSenha.text.toString()))){
-            campoSenha.error = getString(R.string.msg_campo_obrigatorio)
-            result = false
-        }
-        if (campoSenha.text.toString() != campoConfirma.text.toString()){
-            campoConfirma.error = getString(R.string.msg_error_senha)
-            result = false
-        }
 
-        return result
+        val workManager = WorkManager.getInstance(this)
+        workManager.enqueue(request)
+        workManager.getWorkInfoByIdLiveData(request.id).observe(this, resultObserver)
     }
 }

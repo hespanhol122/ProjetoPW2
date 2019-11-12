@@ -1,15 +1,20 @@
 <resources>
     <string name="app_name">Biblioteca</string>
-    <string name="ft_user">Foto do Usuario</string>
-    <string name="email">Email</string>
-    <string name="senha">Senha</string>
+    <string name="login_username">Usuário</string>
+    <string name="login_password">Senha</string>
+    <string name="login_register">Não tem cadastro?</string>
+    <string name="login_photo">Foto do usuário</string>
+    <string name="register_name">Nome</string>
+    <string name="register_email">E-mail</string>
+    <string name="register_phone">Telefone</string>
+    <string name="register_password">Senha</string>
+    <string name="register_confirm_password">Confirmar Senha</string>
     <string name="btn_entrar">Entrar</string>
-    <string name="link_cadastro">Não tem cadastro?</string>
-    <string name="txt_nome">Nome</string>
-    <string name="txt_telefone">Telefone</string>
-    <string name="txt_confirmacao">Confirme sua senha</string>
+    <string name="btn_ok">OK</string>
     <string name="btn_salvar">Salvar</string>
-    <string name="msg_campo_obrigatorio">Este campo é obrigatório</string>
-    <string name="msg_registro_salvo">Registro salvo com sucesso!</string>
-    <string name="msg_error_senha">As senhas estão diferentes</string>
+    <string name="msg_user_registered">%1$s, seu usuário foi salvo com sucesso!</string>
+    <string name="msg_required_field">Esse campo é obrigatório</string>
+    <string name="msg_password_different">As senhas devem ser iguais!</string>
+    <string name="msg_invalid_credential">Credenciais Inválidas</string>
+    <string name="msg_welcome">Seja bem vindo, %1$s!</string>
 </resources>
