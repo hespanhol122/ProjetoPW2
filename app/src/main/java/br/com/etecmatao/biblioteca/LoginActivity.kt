@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun validate():Boolean{
+    private fun validate():Boolean{
         var valid = true
         campoEmail.error = null
         campoSenha.error = null

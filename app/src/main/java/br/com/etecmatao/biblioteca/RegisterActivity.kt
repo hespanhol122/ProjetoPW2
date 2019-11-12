@@ -37,7 +37,7 @@ class RegisterActivity : AppCompatActivity() {
         fields = arrayOf(campoNome, campoEmail, campoTelefone, campoSenha, campoConfirmaSenha)
     }
 
-    fun validar(): Boolean {
+    private fun validar(): Boolean {
         var error = false
 
         for (field in fields) {
@@ -78,7 +78,17 @@ class RegisterActivity : AppCompatActivity() {
                 return@Observer
             }
 
-            if (it.state == WorkInfo.State.SUCCEEDED || it.state == WorkInfo.State.FAILED){
+            if (it.state == WorkInfo.State.SUCCEEDED){
+                Snackbar.make(
+                    this.window.decorView,
+                    it.outputData.getString("result")!!,
+                    Snackbar.LENGTH_LONG
+                ).show()
+
+                RegisterActivity@this.finish()
+            }
+
+            if (it.state == WorkInfo.State.FAILED){
                 Snackbar.make(
                     this.window.decorView,
                     it.outputData.getString("result")!!,
